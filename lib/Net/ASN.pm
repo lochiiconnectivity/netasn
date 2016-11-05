@@ -27,6 +27,7 @@ BEGIN {
 				dottodotplus	dottoplain
 				dottoplain16	dotplustodot
 				dotplustoplain	dotplustoplain16
+				isprivateasn
                                 } ],
                    );
 
@@ -42,6 +43,10 @@ use Carp;
 
 #Constants
 use constant	AS_TRANS => 23456;
+use constant	AS16_PRIVATE_START => 64512;
+use constant	AS16_PRIVATE_END   => 65534;
+use constant	AS32_PRIVATE_START => 4200000000;
+use constant	AS32_PRIVATE_END   => 4294967294;
 
 ##OO Methods
 
@@ -325,6 +330,17 @@ sub gettype () {
 	return ($informat);
 }
 
+##RFC 6996 reserves some ASN's for private use
+sub isprivate {
+    my $self = shift;
+    my $asn = $self->toasplain;
+    if ( ( $asn >= AS16_PRIVATE_START && $asn <= AS16_PRIVATE_END ) ||
+         ( $asn >= AS32_PRIVATE_START && $asn <= AS32_PRIVATE_END ) ) {
+         return 1;
+     }
+     return 0;
+ }
+
 ###NON OO Function wrappers
 ##toasdot
 sub plaintodot ($) {
@@ -386,6 +402,14 @@ sub dotplustoplain16 ($) {
 	croak __PACKAGE__, ": Must provide ASDOT+" unless ($inasn=~m/\./);	#Ensure only dotted is passed
 	my $asn = Net::ASN->new($inasn) || croak __PACKAGE__, ": Could not create new Net::ASN object";
 	return ($asn->toasplain16);
+}
+
+##isprivate
+sub isprivateasn ($) {
+	my $inasn = shift;
+	croak __PACKAGE__, ": No ASN specified" unless ($inasn);
+	my $asn = Net::ASN->new($inasn) || croak __PACKAGE__, ": Could not create new Net::ASN object";
+	return ($asn->isprivate);
 }
 
 1;
@@ -482,6 +506,13 @@ returns the ASPLAIN
 
 Returns the ASDOT+ representation of the parsed ASN.
 
+=item isprivate
+
+	my $isprivate = $asn->isprivate;
+
+Returns 1 if the number falls within the private reserved ranges according to
+RFC6996, 0 otherwise. Will accept any format that L<Net::ASN> can convert to
+ASPLAIN 
 
 =back
 
@@ -549,6 +580,14 @@ Returns the ASPLAIN representation of the ASN ($asn)
 Returns the ASPLAIN representation of the ASN ($asn) if the ASPLAIN
 representation is is less than or equal to 65535, else returns AS_TRANS
 (Assumes your ASN is in ASDOT+ format)
+
+=item isprivateasn
+
+	my $isprivateasn = isprivateasn($asn);
+
+Returns 1 if the number falls within the private reserved ranges according to
+RFC6996, 0 otherwise. Will accept any format that L<Net::ASN> can convert to
+ASPLAIN 
 
 =back
 
