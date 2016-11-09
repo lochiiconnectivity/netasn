@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use Net::ASN qw(:all);
-use Test::More tests =>62;
+use Test::More tests =>74;
 
 ##OO tests
 print "Starting OO Tests..\n";
@@ -58,6 +58,15 @@ is(     $asn32->toasplain               ,       65537           ,'asn32 asplain 
 is(     $asn32->toasdot                 ,       '1.1'           ,'asn32 asdot test'     );
 is(     $asn32->toasdotplus             ,       '1.1'           ,'asn32 asdotplus test' );
 
+ok(     $private_asn16 = Net::ASN->new(64512) ,                 'private 16 bit ASN'    );
+is(     $private_asn16->isprivate      ,       1               ,'16 bit ASN corrected marked as private' );
+ok(     $private_asn32 = Net::ASN->new(4200000000) ,            'private 32 bit ASN'    );
+is(     $private_asn32->isprivate      ,       1               ,'32 bit ASN corrected marked as private' );
+
+ok(     $public_asn16 = Net::ASN->new(64511) ,                 'public 16 bit ASN'    );
+is(     $public_asn16->isprivate      ,       0               ,'16 bit ASN corrected marked as private' );
+ok(     $public_asn32 = Net::ASN->new(4199999999) ,            'public 32 bit ASN'    );
+is(     $public_asn32->isprivate      ,       0               ,'32 bit ASN corrected marked as private' );
 
 ##Non-OO Tests
 print "Starting non-OO tests..\n";
@@ -79,3 +88,7 @@ is(     dottoplain('1.0')           	,       65536           ,'dottoplain(2)'   
 is(     dottoplain16('12345')     	,       12345           ,'dottoplain16(1)'  	);
 is(     dottoplain16('1.0')         	,       23456           ,'dottoplain16(2)'  	);
 
+is( isprivateasn(64512)     , 1, 'isprivateasn reports private for 16 bit ASN' );
+is( isprivateasn(4200000000), 1, 'isprivateasn reports private for 32 bit ASN' );
+is( isprivateasn(64511)     , 0, 'isprivateasn reports public for 16 bit ASN'  );
+is( isprivateasn(4199999999), 0, 'isprivateasn reports public for 32 bit ASN'  );
