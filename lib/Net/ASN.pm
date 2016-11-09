@@ -35,7 +35,7 @@ BEGIN {
 
 	Exporter::export_ok_tags('all');
 
-    	$VERSION = '1.06';
+    	$VERSION = '1.07';
 }
 
 # Preloaded methods go here.
@@ -43,10 +43,14 @@ use Carp;
 
 #Constants
 use constant	AS_TRANS => 23456;
+use constant	AS16_START 	   => 1;
 use constant	AS16_PRIVATE_START => 64512;
 use constant	AS16_PRIVATE_END   => 65534;
+use constant	AS16_END	   => 65535;
+use constant	AS32_START 	   => 65536;
 use constant	AS32_PRIVATE_START => 4200000000;
 use constant	AS32_PRIVATE_END   => 4294967294;
+use constant	AS32_END 	   => 4294967295;
 
 ##OO Methods
 
@@ -90,7 +94,7 @@ sub _parseasn ($;$) {
 
 	if ($inasn=~m/^(\d+)$/) {		#ASN is ASN16 (1-65535) or ASN32 ASPLAIN (1-4294967295) or ASDOT if forced
 		if ($asasdot) {
-			if ($inasn > 0 && $inasn <=  65535) {
+			if ($inasn >= AS16_START && $inasn <=  AS16_END) {
 				$self->{_informat} = 'asdot';
 				$self->{_asdot} = $inasn;
 			}
@@ -98,11 +102,11 @@ sub _parseasn ($;$) {
 				croak __PACKAGE__, ": Invalid ASDOT ASN (ASDOT does NOT permit ASPLAIN notation for ASNs 63356-4294967295)";
 			}
 		}
-		elsif ($inasn > 0 && $inasn <=  65535) {
+		elsif ($inasn >= AS16_START && $inasn <=  AS16_END) {
 			$self->{_informat} = 'asplain16';
 			$self->{_asplain16} = $inasn;
 		}
-		elsif ($inasn > 65535 && $inasn <= 4294967295) {
+		elsif ($inasn >= AS32_START && $inasn <= AS32_END) {
 			$self->{_informat} = 'asplain32';
 			$self->{_asplain32} = $inasn;
 		}
@@ -116,8 +120,8 @@ sub _parseasn ($;$) {
 		my $secondasn = $2;
 
 		unless (
-			($firstasn >= 0 && $firstasn <= 65535) && 
-			($secondasn >= 0 && $secondasn <= 65535) &&
+			($firstasn >= 0 && $firstasn <= AS16_END) && 
+			($secondasn >= 0 && $secondasn <= AS16_END) &&
 			(
 				($firstasn  > 0) ||
 				($secondasn > 0)
