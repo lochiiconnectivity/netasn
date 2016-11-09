@@ -10,6 +10,16 @@ WriteMakefile(
     AUTHOR              => 'David J. Freedman <lochii@convergence.cx>',
     VERSION_FROM        => 'lib/Net/ASN.pm',
     ABSTRACT_FROM       => 'lib/Net/ASN.pm',
+    META_MERGE => {
+        'meta-spec' => { version => 2 },
+         resources => {
+             repository => {
+                 type => 'git',
+                 url  => 'https://github.com/lochiiconnectivity/netasn.git',
+                 web  => 'https://github.com/lochiiconnectivity/netasn',
+             },
+         },
+    },
     ($makemakerversion >= 6.3002
       ? ('LICENSE'=> 'perl')
       : ()),
