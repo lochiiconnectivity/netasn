@@ -1,5 +1,11 @@
 Revision history for Net-ASN
 
+1.07	09/11/16 00:08
+	Add ability to detect ASNs reserved for private use (Kevin Phair)
+	Replace limits with constants
+	Improve Makefile with respect to testing
+	Add travis CI
+
 1.06	21/12/08 03:16
 	More ammendments to POD
 
