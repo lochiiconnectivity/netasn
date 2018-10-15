@@ -22,12 +22,12 @@ BEGIN {
 	@EXPORT = qw();
 
 	%EXPORT_TAGS = (
-                    all => [qw{ 
+                    all => [qw{
 				plaintodot	plaintodotplus
 				dottodotplus	dottoplain
 				dottoplain16	dotplustodot
 				dotplustoplain	dotplustoplain16
-				isprivateasn
+				isprivateasn    isreservedasn
                                 } ],
                    );
 
@@ -69,7 +69,7 @@ sub new {
 
 	$self->_parseasn($asn,$asasdot);	#Parse the ASN
 
-	return $self;		
+	return $self;
 
 }
 
@@ -120,7 +120,7 @@ sub _parseasn ($;$) {
 		my $secondasn = $2;
 
 		unless (
-			($firstasn >= 0 && $firstasn <= AS16_END) && 
+			($firstasn >= 0 && $firstasn <= AS16_END) &&
 			($secondasn >= 0 && $secondasn <= AS16_END) &&
 			(
 				($firstasn  > 0) ||
@@ -155,7 +155,7 @@ sub _parseasn ($;$) {
 }
 
 sub _plaintodot ($) {
-		
+
 	my $self = shift;
 	my $asplain = shift;
 
@@ -202,7 +202,7 @@ sub toasdot () {
 		}
 
 	}
-	elsif ($self->{_informat} eq 'asdotplus') {	#User wants asdot and has given us asdotplus, so return asplain if 
+	elsif ($self->{_informat} eq 'asdotplus') {	#User wants asdot and has given us asdotplus, so return asplain if
 		if ($self->{_asdotsedtet1} == 0) {	#If first sedtet is 0, return the second only
 			return ($self->{_asdotsedtet2});
 		}
@@ -343,7 +343,20 @@ sub isprivate {
          return 1;
      }
      return 0;
- }
+}
+
+##RFC 7300 Reservation of Last Autonomous System (AS) Numbers
+##RFC 4893 reserves 23456 for AS_TRANS
+sub isreserved {
+    my $self = shift;
+    my $asn = $self->toasplain;
+    if ( $asn == AS16_END ||
+         $asn == AS32_END ||
+         $asn == AS_TRANS ) {
+         return 1;
+     }
+     return 0;
+}
 
 ###NON OO Function wrappers
 ##toasdot
@@ -416,6 +429,14 @@ sub isprivateasn ($) {
 	return ($asn->isprivate);
 }
 
+##isreserved
+sub isreservedasn ($) {
+	my $inasn = shift;
+	croak __PACKAGE__, ": No ASN specified" unless ($inasn);
+	my $asn = Net::ASN->new($inasn) || croak __PACKAGE__, ": Could not create new Net::ASN object";
+	return ($asn->isreserved);
+}
+
 1;
 __END__
 =pod
@@ -454,8 +475,8 @@ Net::ASN - Perl extension for manipulating autonomous system numbers
 
 =head1 DESCRIPTION
 
-Net::ASN provides functions for parsing autonomous system numbers 
-(ASNs) as defined in RFC 1771 and extended by RFC4893, also 
+Net::ASN provides functions for parsing autonomous system numbers
+(ASNs) as defined in RFC 1771 and extended by RFC4893, also
 converting between formats discussed in RFC5396.
 
 Both an OO implementation (method based) and non-OO (function based)
@@ -494,7 +515,7 @@ Returns the ASPLAIN representation of the parsed ASN
 Returns the ASPLAIN representation of the parsed ASN if the ASPLAIN
 representation is is less than or equal to 65535, else returns AS_TRANS
 
-Use for compabability with 16 bit ASN systems.
+Use for compatibility with 16 bit ASN systems.
 
 =item toasdot
 
@@ -516,7 +537,15 @@ Returns the ASDOT+ representation of the parsed ASN.
 
 Returns 1 if the number falls within the private reserved ranges according to
 RFC6996, 0 otherwise. Will accept any format that L<Net::ASN> can convert to
-ASPLAIN 
+ASPLAIN
+
+=item isreserved
+
+	my $isreserved = $asn->isreservedasn;
+
+Returns 1 if the number falls within the reserved ASN numbers according to
+RFC7300 and RFC4893, 0 otherwise. Will accept any format that L<Net::ASN> can
+convert to ASPLAIN
 
 =back
 
@@ -591,7 +620,15 @@ representation is is less than or equal to 65535, else returns AS_TRANS
 
 Returns 1 if the number falls within the private reserved ranges according to
 RFC6996, 0 otherwise. Will accept any format that L<Net::ASN> can convert to
-ASPLAIN 
+ASPLAIN
+
+=item isreservedasn
+
+	my $isreservedasn = isreservedasn($asn);
+
+Returns 1 if the number falls within the reserved ASN numbers according to
+RFC7300 and RFC4893, 0 otherwise. Will accept any format that L<Net::ASN> can
+convert to ASPLAIN
 
 =back
 
@@ -611,7 +648,7 @@ it under the terms as perl itself.
 
 =head1 REPOSITORY
 
-L<https://github.com/lochiiconnectivity/netasn.git
+L<https://github.com/lochiiconnectivity/netasn.git>
 
 perl(1)
 
