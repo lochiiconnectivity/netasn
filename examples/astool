@@ -16,9 +16,12 @@ unless ($inasn) {
 }
 
 my $asn = Net::ASN->new($inasn,$asasdot);
-print "type     : " . $asn->gettype	. "\n";
-print "asplain16: " . $asn->toasplain16 . "\n";
-print "asplain32: " . $asn->toasplain   . "\n";
-print "asdot    : " . $asn->toasdot     . "\n";
-print "asdotplus: " . $asn->toasdotplus . "\n";
+print "type       : " . $asn->gettype     . "\n";
+print "asplain16  : " . $asn->toasplain16 . "\n";
+print "asplain32  : " . $asn->toasplain   . "\n";
+print "asdot      : " . $asn->toasdot     . "\n";
+print "asdotplus  : " . $asn->toasdotplus . "\n";
+print "isprivate  : " . $asn->isprivate   . "\n";
+print "isreserved : " . $asn->isreserved  . "\n";
+
 print "\n";

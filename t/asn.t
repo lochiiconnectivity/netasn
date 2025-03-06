@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use Net::ASN qw(:all);
-use Test::More tests =>74;
+use Test::More tests =>83;
 
 ##OO tests
 print "Starting OO Tests..\n";
@@ -68,6 +68,13 @@ is(     $public_asn16->isprivate      ,       0               ,'16 bit ASN corre
 ok(     $public_asn32 = Net::ASN->new(4199999999) ,            'public 32 bit ASN'    );
 is(     $public_asn32->isprivate      ,       0               ,'32 bit ASN corrected marked as private' );
 
+ok(     $reserved_asn16 = Net::ASN->new(23456),                 'AS_TRANS ASN' );
+is(     $reserved_asn16->isreserved    ,             1         ,'AS_TRANS corrected marked as reserved' );
+ok(     $reserved_asn16 = Net::ASN->new(65535),                 'last 16 bit ASN' );
+is(     $reserved_asn16->isreserved    ,             1         ,'last 16 bit ASN corrected marked as reserved' );
+ok(     $reserved_asn32 = Net::ASN->new(4294967295),            'last 32 bit ASN' );
+is(     $reserved_asn32->isreserved    ,             1         ,'last 32 bit ASN corrected marked as reserved' );
+
 ##Non-OO Tests
 print "Starting non-OO tests..\n";
 
@@ -92,3 +99,7 @@ is( isprivateasn(64512)     , 1, 'isprivateasn reports private for 16 bit ASN' )
 is( isprivateasn(4200000000), 1, 'isprivateasn reports private for 32 bit ASN' );
 is( isprivateasn(64511)     , 0, 'isprivateasn reports public for 16 bit ASN'  );
 is( isprivateasn(4199999999), 0, 'isprivateasn reports public for 32 bit ASN'  );
+
+is( isreservedasn(23456)     , 1, 'isreservedasn reports reserved for 16 bit AS_TRANS'  );
+is( isreservedasn(65535)     , 1, 'isreservedasn reports reserved for last 16 bit ASN'  );
+is( isreservedasn(4294967295), 1, 'isreservedasn reports reserved for last 32 bit ASN'  );
